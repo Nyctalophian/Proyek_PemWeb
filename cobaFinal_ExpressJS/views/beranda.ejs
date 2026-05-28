@@ -1,0 +1,68 @@
+<%- include('partials/header') %>
+<%- include('partials/sidebar') %>
+
+<div class="main-wrapper">
+  <header class="topbar">
+    <h1 class="topbar-title">Beranda</h1>
+    <div class="topbar-right">
+      <div class="avatar"><%= session.isLoggedIn ? 'SR' : 'G' %></div>
+    </div>
+  </header>
+
+  <main class="content">
+    <div style="background: var(--orange); color: white; padding: 24px; border-radius: 16px; text-align: center; margin-bottom: 24px;">
+      <h2 style="font-family: 'Manrope'; font-size: 20px; font-weight: 800; margin-bottom: 8px;">SELAMAT DATANG</h2>
+      <p style="font-size: 14px; opacity: 0.9;">Lost & Found merupakan suatu perangkat lunak dengan yang dirancang untuk memfasilitasi dan mengelola proses pencarian barang hilang serta penemuan barang di lingkungan Fakultas Ilmu Komputer Universitas Brawijaya.</p>
+    </div>
+
+    <section class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Barang Tersedia</p>
+          <p class="stat-value"><%= stats.total - stats.menunggu %></p>
+        </div>
+        <div class="stat-icon completed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg></div>
+      </div>
+      <% if (session.isLoggedIn) { %>
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Klaim Saya</p>
+          <p class="stat-value">1</p> </div>
+        <div class="stat-icon info"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2"/></svg></div>
+      </div>
+      <% } %>
+      <div class="stat-card">
+        <div class="stat-info">
+          <p class="stat-label">Total Barang Temuan</p>
+          <p class="stat-value"><%= stats.total %></p>
+        </div>
+        <div class="stat-icon pending"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      </div>
+    </section>
+
+    <div style="display: grid; gap: 16px;">
+      <div style="background: var(--yellow-bg); padding: 20px; border-radius: 12px; border: 1px solid #fef08a;">
+        <h3 style="color: var(--yellow-fg); font-size: 14px; margin-bottom: 12px; font-weight: 700;">💡 Tips Pencarian Barang:</h3>
+        <ul style="font-size: 13px; color: var(--text); padding-left: 20px; list-style-type: disc;">
+          <li>Gunakan kata kunci spesifik (merek, warna, model, dll)</li>
+          <li>Cek kategori yang sesuai dengan barang anda</li>
+          <li>Perhatikan lokasi dan tanggal ditemukan</li>
+        </ul>
+      </div>
+      
+      <% if (session.isLoggedIn) { %>
+      <div style="background: var(--blue-bg); padding: 20px; border-radius: 12px; border: 1px solid #bfdbfe;">
+        <h3 style="color: var(--blue-fg); font-size: 14px; margin-bottom: 12px; font-weight: 700;">📘 Panduan Mengklaim Barang</h3>
+        <ul style="font-size: 13px; color: var(--text); padding-left: 20px; list-style-type: disc;">
+          <li>Gunakan fitur <b>pencarian</b> untuk menemukan barang Anda</li>
+          <li>Klik tombol <b>"Klaim Barang"</b> jika menemukan barang Anda</li>
+          <li>Isi form dengan <b>bukti kepemilikan</b> dan ciri-ciri khusus barang</li>
+          <li>Tunggu <b>verifikasi dari petugas</b>, jika disetujui Anda bisa mengambil barang</li>
+        </ul>
+      </div>
+      <% } %>
+    </div>
+  </main>
+</div>
+
+<%- include('partials/footer') %>

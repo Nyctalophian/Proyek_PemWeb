@@ -1,0 +1,42 @@
+<%- include('partials/header') %>
+<%- include('partials/sidebar') %>
+
+<div class="main-wrapper">
+  <main class="content">
+    <div class="filter-bar" style="border-radius: 12px; margin-bottom: 24px;">
+      <div class="search-wrap">
+        <input type="text" id="searchInput" placeholder="Cari Barang (nama, kategori, deskripsi)..." style="width: 100%;" />
+      </div>
+      </div>
+
+    <div class="barang-grid">
+      <% barang.forEach(item => { %>
+        <div class="barang-card">
+          <div class="card-img-wrap">
+             <div class="card-img-placeholder">📦</div>
+             <span class="card-badge badge-dipublikasikan">Siap Diklaim</span>
+          </div>
+          <div class="card-body">
+            <p class="card-name"><%= item.nama %></p>
+            <p class="card-desc"><%= item.deskripsi %></p>
+            <div class="card-meta">
+              <span class="card-meta-item">📍 <%= item.lokasi %></span>
+              <span class="card-meta-item">📅 <%= item.tanggal_ditemukan %></span>
+            </div>
+          </div>
+          <div class="card-footer">
+            <span class="card-kategori"><%= item.kategori %></span>
+            <div class="card-actions">
+              <button class="btn-sm btn-view">Detail</button>
+              
+              <% if (session.isLoggedIn) { %>
+                <button class="btn-sm" style="background: var(--navy); color: white;">Klaim</button>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </main>
+</div>
+<%- include('partials/footer') %>
