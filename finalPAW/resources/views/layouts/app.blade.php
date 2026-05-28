@@ -36,7 +36,7 @@
 
 {{-- ────── NAVBAR ────── --}}
 <nav class="bg-navy shadow-md">
-    <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+    <div class="px-6 h-16 flex items-center justify-between">
 
         {{-- Logo + Hamburger --}}
         <div class="flex items-center gap-4">
@@ -143,7 +143,7 @@
 @endif
 
 {{-- ────── BODY LAYOUT ────── --}}
-<div class="flex flex-1 max-w-6xl mx-auto w-full px-4 pt-4 pb-6 gap-6">
+<div class="flex flex-1 w-full px-6 pt-4 pb-6 gap-6">
     {{-- Sidebar (mobile: slide, desktop: tetap) --}}
     <aside id="sidebar"
         class="fixed md:sticky left-0 top-0 md:top-20 h-full md:h-auto w-64 bg-white shadow-2xl md:shadow-sm z-50

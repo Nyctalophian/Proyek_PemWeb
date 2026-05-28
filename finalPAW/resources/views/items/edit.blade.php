@@ -12,11 +12,11 @@
 
         <div class="p-6">
             @if($errors->any())
-                <div class="alert-error">
-                    @foreach($errors->all() as $error)
-                        <p>• {{ $error }}</p>
-                    @endforeach
-                </div>
+            <div class="alert-error">
+                @foreach($errors->all() as $error)
+                <p>• {{ $error }}</p>
+                @endforeach
+            </div>
             @endif
 
             <form action="{{ route('items.update', $item) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -39,7 +39,7 @@
                     <label class="block text-xs font-bold text-gray-700 mb-1">Kategori <span class="text-red-500">*</span></label>
                     <select name="category" class="form-input form-input-orange">
                         @foreach(['Elektronik','Aksesori','Dokumen','Pakaian','Lainnya'] as $cat)
-                            <option value="{{ $cat }}" {{ old('category', $item->category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        <option value="{{ $cat }}" {{ old('category', $item->category) == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -66,10 +66,10 @@
                 <div>
                     <label class="block text-xs font-bold text-gray-700 mb-1">Ganti Foto</label>
                     @if($item->photo)
-                        <div class="mb-2">
-                            <img src="{{ asset('storage/' . $item->photo) }}" class="h-24 rounded-lg object-cover" alt="foto saat ini">
-                            <p class="text-xs text-gray-400 mt-1">Foto saat ini. Upload baru untuk mengganti.</p>
-                        </div>
+                    <div class="mb-2">
+                        <img src="{{ asset('storage/' . $item->photo) }}" class="h-24 rounded-lg object-cover" alt="foto saat ini">
+                        <p class="text-xs text-gray-400 mt-1">Foto saat ini. Upload baru untuk mengganti.</p>
+                    </div>
                     @endif
                     <input type="file" name="photo" accept="image/*"
                         class="w-full text-xs text-gray-500 file:mr-2 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-orange-50 file:text-orange-600 hover:file:bg-orange-100 border border-gray-200 rounded-lg p-2">

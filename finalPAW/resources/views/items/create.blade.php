@@ -15,13 +15,13 @@
         {{-- Form --}}
         <div class="p-6">
             @if($errors->any())
-                <div class="alert-error">
-                    <ul class="space-y-1">
-                        @foreach($errors->all() as $error)
-                            <li>• {{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
+            <div class="alert-error">
+                <ul class="space-y-1">
+                    @foreach($errors->all() as $error)
+                    <li>• {{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
             @endif
 
             <form action="{{ route('items.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
@@ -51,7 +51,7 @@
                     <select name="category" class="form-input form-input-orange @error('category') error @enderror">
                         <option value="">Pilih kategori barang...</option>
                         @foreach(['Elektronik','Aksesori','Dokumen','Pakaian','Lainnya'] as $cat)
-                            <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        <option value="{{ $cat }}" {{ old('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
                         @endforeach
                     </select>
                     @error('category') <p class="field-error">{{ $message }}</p> @enderror
@@ -97,7 +97,7 @@
                         <div id="upload-placeholder" class="flex flex-col items-center gap-2">
                             <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                             </div>
                             <p class="text-xs text-gray-500">Klik untuk mengunggah file atau drag & drop</p>
@@ -113,7 +113,7 @@
                     <button type="submit"
                         class="btn-primary w-2/3 py-2.5 font-medium flex items-center justify-center gap-2">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
                         Submit
                     </button>
@@ -130,41 +130,44 @@
 
 @push('scripts')
 <script>
-// Preview foto sebelum upload (JavaScript)
-document.getElementById('photo-input').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
+    // Preview foto sebelum upload (JavaScript)
+    document.getElementById('photo-input').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
 
-    if (file.size > 2 * 1024 * 1024) {
-        showToast('danger', 'Ukuran file melebihi 2MB!');
-        this.value = '';
-        return;
-    }
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('danger', 'Ukuran file melebihi 2MB!');
+            this.value = '';
+            return;
+        }
 
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-        document.getElementById('preview-img').src = ev.target.result;
-        document.getElementById('upload-preview').classList.remove('hidden');
-        document.getElementById('upload-placeholder').classList.add('hidden');
-    };
-    reader.readAsDataURL(file);
-});
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+            document.getElementById('preview-img').src = ev.target.result;
+            document.getElementById('upload-preview').classList.remove('hidden');
+            document.getElementById('upload-placeholder').classList.add('hidden');
+        };
+        reader.readAsDataURL(file);
+    });
 
-// Drag and drop
-const uploadZone = document.getElementById('upload-zone');
-uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('border-orange-400'); });
-uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('border-orange-400'));
-uploadZone.addEventListener('drop', e => {
-    e.preventDefault();
-    uploadZone.classList.remove('border-orange-400');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) {
-        const input = document.getElementById('photo-input');
-        const dataTransfer = new DataTransfer();
-        dataTransfer.items.add(file);
-        input.files = dataTransfer.files;
-        input.dispatchEvent(new Event('change'));
-    }
-});
+    // Drag and drop
+    const uploadZone = document.getElementById('upload-zone');
+    uploadZone.addEventListener('dragover', e => {
+        e.preventDefault();
+        uploadZone.classList.add('border-orange-400');
+    });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('border-orange-400'));
+    uploadZone.addEventListener('drop', e => {
+        e.preventDefault();
+        uploadZone.classList.remove('border-orange-400');
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const input = document.getElementById('photo-input');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            input.files = dataTransfer.files;
+            input.dispatchEvent(new Event('change'));
+        }
+    });
 </script>
 @endpush
