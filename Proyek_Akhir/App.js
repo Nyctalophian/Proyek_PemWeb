@@ -9,7 +9,6 @@ $(function () {
 });
 
 function bindEvents () {
-
   $('#menuToggle').on('click', openSidebar);
   $('#sidebarOverlay').on('click', closeSidebar);
 
@@ -83,6 +82,7 @@ function openSidebar () {
   $('#sidebarOverlay').addClass('active');
   $('body').css('overflow', 'hidden');
 }
+
 function closeSidebar () {
   $('#sidebar').removeClass('open');
   $('#sidebarOverlay').removeClass('active');
