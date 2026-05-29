@@ -10,3 +10,4 @@ finalPAW/bootstrap/cache
 /vendor
 .env
 .DS_Store
+finalPAW/package-lock.json
