@@ -10,7 +10,18 @@ class Claim extends Model
         'item_id', 'claimant_id', 'item_name', 'proof_of_ownership',
         'special_characteristics', 'phone', 'email',
         'status', 'admin_note', 'notification_read',
+        'deleted_by_user_at',
     ];
+
+    protected $casts = [
+        'deleted_by_user_at' => 'datetime',
+    ];
+
+    // Scope: exclude soft-deleted by user
+    public function scopeVisible($query)
+    {
+        return $query->whereNull('deleted_by_user_at');
+    }
 
     // Relasi
     public function item()

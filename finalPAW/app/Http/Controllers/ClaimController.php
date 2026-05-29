@@ -83,16 +83,38 @@ class ClaimController extends Controller
     {
         $claims = Claim::with(['item', 'item.reporter'])
             ->where('claimant_id', Auth::id())
+            ->visible()
             ->latest()
             ->paginate(10);
 
         $stats = [
-            'my_claims'  => Claim::where('claimant_id', Auth::id())->count(),
-            'pending'    => Claim::where('claimant_id', Auth::id())->where('status', 'pending')->count(),
+            'my_claims'  => Claim::where('claimant_id', Auth::id())->visible()->count(),
+            'pending'    => Claim::where('claimant_id', Auth::id())->where('status', 'pending')->visible()->count(),
             'total_items'=> Item::where('status', '!=', 'pending')->count(),
         ];
 
         return view('claims.my-claims', compact('claims', 'stats'));
+    }
+
+    // Hapus klaim: user = soft delete (dari view sendiri), admin = permanent
+    public function destroy(Claim $claim)
+    {
+        /** @var \App\Models\User $user */
+        $user = Auth::user();
+
+        if ($user->isAdmin()) {
+            // Admin: hapus permanent
+            $claim->delete();
+            return back()->with('success', 'Klaim berhasil dihapus permanent.');
+        }
+
+        // Mahasiswa: hanya bisa soft delete klaim milik sendiri
+        if ($claim->claimant_id !== $user->id) {
+            abort(403, 'Anda tidak memiliki akses ke klaim ini.');
+        }
+
+        $claim->update(['deleted_by_user_at' => now()]);
+        return back()->with('success', 'Klaim berhasil disembunyikan dari daftar Anda.');
     }
 
     // ============================================================
@@ -153,17 +175,43 @@ class ClaimController extends Controller
     }
 
     // Admin: lihat semua klaim
-    public function adminIndex()
+    public function adminIndex(Request $request)
     {
         /** @var \App\Models\User $user */
         $user = Auth::user();
         if (!$user->isAdmin()) abort(403);
 
-        $claims = Claim::with(['item', 'claimant'])
-            ->latest()
-            ->paginate(15);
+        $query = Claim::with(['item', 'claimant']);
 
-        return view('claims.admin-index', compact('claims'));
+        // Filter status
+        if ($status = $request->get('status')) {
+            $query->where('status', $status);
+        }
+
+        // Search by item name or claimant name
+        if ($search = $request->get('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('item_name', 'like', "%{$search}%")
+                    ->orWhereHas('claimant', function ($qq) use ($search) {
+                        $qq->where('name', 'like', "%{$search}%")
+                            ->orWhere('nim', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('item', function ($qq) use ($search) {
+                        $qq->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $claims = $query->latest()->paginate(15)->appends($request->query());
+
+        $stats = [
+            'total'    => Claim::count(),
+            'pending'  => Claim::where('status', 'pending')->count(),
+            'approved' => Claim::where('status', 'approved')->count(),
+            'rejected' => Claim::where('status', 'rejected')->count(),
+        ];
+
+        return view('claims.admin-index', compact('claims', 'stats'));
     }
 
     // Admin: approve atau reject klaim
@@ -191,7 +239,7 @@ class ClaimController extends Controller
             Notification::create_for(
                 $claim->claimant,
                 'claim_approved',
-                '✅ Klaim Disetujui!',
+                'Klaim Disetujui!',
                 "Klaim Anda untuk barang \"{$claim->item->name}\" telah DISETUJUI. Segera ambil barang di admin FILKOM.",
                 $claim
             );
@@ -202,7 +250,7 @@ class ClaimController extends Controller
             Notification::create_for(
                 $claim->claimant,
                 'claim_rejected',
-                '❌ Klaim Ditolak',
+                'Klaim Ditolak',
                 "Klaim Anda untuk barang \"{$claim->item->name}\" ditolak. Alasan: " . ($request->admin_note ?? 'Bukti kepemilikan tidak mencukupi.'),
                 $claim
             );

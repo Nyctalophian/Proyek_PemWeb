@@ -98,10 +98,13 @@
 
         {{-- Actions --}}
         <div class="flex flex-col gap-2 flex-shrink-0">
+            @if(Auth::user()->isAdmin() || $item->status === 'pending')
             <a href="{{ route('items.edit', $item) }}"
                 class="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition text-center">
                 Edit
             </a>
+            @endif
+            @if(Auth::user()->isAdmin())
             <form action="{{ route('items.destroy', $item) }}" method="POST"
                 onsubmit="return confirm('Yakin hapus laporan ini?')">
                 @csrf @method('DELETE')
@@ -110,6 +113,7 @@
                     Hapus
                 </button>
             </form>
+            @endif
         </div>
     </div>
     @endforeach

@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/barang/{item}/klaim',  [ClaimController::class, 'create'])->name('claims.create');
     Route::post('/barang/{item}/klaim', [ClaimController::class, 'store'])->name('claims.store');
     Route::get('/klaim-saya',           [ClaimController::class, 'myClaims'])->name('claims.my-claims');
+    Route::delete('/klaim/{claim}',     [ClaimController::class, 'destroy'])->name('claims.destroy');
 
     // Profil
     Route::get('/profil',              [ProfileController::class, 'show'])->name('profile');

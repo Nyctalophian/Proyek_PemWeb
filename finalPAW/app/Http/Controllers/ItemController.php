@@ -20,9 +20,9 @@ class ItemController extends Controller
         if ($search = $request->get('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%$search%")
-                  ->orWhere('description', 'like', "%$search%")
-                  ->orWhere('category', 'like', "%$search%")
-                  ->orWhere('location_found', 'like', "%$search%");
+                    ->orWhere('description', 'like', "%$search%")
+                    ->orWhere('category', 'like', "%$search%")
+                    ->orWhere('location_found', 'like', "%$search%");
             });
         }
 
@@ -82,7 +82,7 @@ class ItemController extends Controller
             'name'          => 'required|string|max:255',
             'description'   => 'required|string|min:10',
             'category'      => 'required|in:Elektronik,Aksesori,Dokumen,Pakaian,Lainnya',
-            'location_found'=> 'required|string|max:255',
+            'location_found' => 'required|string|max:255',
             'found_date'    => 'required|date|before_or_equal:today',
             'contact_info'  => 'required|string|max:255',
             'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -126,7 +126,7 @@ class ItemController extends Controller
             'name'          => 'required|string|max:255',
             'description'   => 'required|string|min:10',
             'category'      => 'required|in:Elektronik,Aksesori,Dokumen,Pakaian,Lainnya',
-            'location_found'=> 'required|string|max:255',
+            'location_found' => 'required|string|max:255',
             'found_date'    => 'required|date|before_or_equal:today',
             'contact_info'  => 'required|string|max:255',
             'photo'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
@@ -143,29 +143,17 @@ class ItemController extends Controller
         return redirect()->route('my-reports')->with('success', 'Laporan berhasil diperbarui.');
     }
 
-    // Hapus barang (soft delete / benar-benar hapus)
+    // Hapus barang (hanya admin)
     public function destroy(Item $item)
     {
         /** @var User */
         $user = Auth::user();
+        if (!$user->isAdmin()) abort(403, 'Hanya admin yang dapat menghapus laporan.');
 
-        // Admin: hapus permanen (akses ke semua laporan)
-        if ($user->isAdmin()) {
-            if ($item->photo) Storage::disk('public')->delete($item->photo);
-            $item->delete();
+        if ($item->photo) Storage::disk('public')->delete($item->photo);
+        $item->delete();
 
-            return redirect()->route('my-reports')->with('success', 'Laporan berhasil dihapus permanen.');
-        }
-
-        // Mahasiswa: hanya bisa hapus laporan milik sendiri
-        if ($item->reported_by !== $user->id) {
-            abort(403, 'Anda tidak memiliki akses ke laporan ini.');
-        }
-
-        // Mahasiswa: soft delete (sembunyikan dari view sendiri)
-        $item->update(['deleted_by_user_at' => now()]);
-
-        return redirect()->route('my-reports')->with('success', 'Laporan berhasil disembunyikan.');
+        return redirect()->route('my-reports')->with('success', 'Laporan berhasil dihapus permanen.');
     }
 
     // Laporan milik user login
@@ -222,17 +210,19 @@ class ItemController extends Controller
         return response()->json(['success' => true, 'new_status' => $item->status]);
     }
 
-    // Helper: cek kepemilikan
+    // Helper: admin selalu bisa; mahasiswa hanya bisa jika status masih pending
     private function authorize_item(Item $item): void
     {
         /** @var User */
         $user = Auth::user();
-        if (!$user->isAdmin() && $item->reported_by !== $user->id) {
+        if ($user->isAdmin()) return;
+
+        if ($item->reported_by !== $user->id) {
             abort(403, 'Anda tidak memiliki akses ke laporan ini.');
         }
-        // Mahasiswa tidak bisa akses laporan yang sudah dihapus (soft delete)
-        if (!$user->isAdmin() && $item->deleted_by_user_at !== null) {
-            abort(404, 'Laporan tidak ditemukan.');
+
+        if ($item->status !== 'pending') {
+            abort(403, 'Laporan sudah diverifikasi admin dan tidak dapat diedit lagi.');
         }
     }
 }
